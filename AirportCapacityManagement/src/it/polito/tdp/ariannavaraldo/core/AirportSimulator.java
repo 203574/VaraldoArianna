@@ -12,7 +12,6 @@ import it.polito.tdp.ariannavaraldo.model.CheckInActivity;
 import it.polito.tdp.ariannavaraldo.model.CheckInDesk;
 import it.polito.tdp.ariannavaraldo.model.Commons;
 import it.polito.tdp.ariannavaraldo.model.ConfigDeparture;
-import it.polito.tdp.ariannavaraldo.model.DepartureStatistics;
 import it.polito.tdp.ariannavaraldo.model.Flight;
 import it.polito.tdp.ariannavaraldo.model.PersonDeparture;
 import it.polito.tdp.ariannavaraldo.model.PersonArea;
