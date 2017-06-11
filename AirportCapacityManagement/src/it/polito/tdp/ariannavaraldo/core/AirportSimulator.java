@@ -3,6 +3,7 @@ package it.polito.tdp.ariannavaraldo.core;
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
@@ -11,6 +12,7 @@ import it.polito.tdp.ariannavaraldo.model.CheckInActivity;
 import it.polito.tdp.ariannavaraldo.model.CheckInDesk;
 import it.polito.tdp.ariannavaraldo.model.Commons;
 import it.polito.tdp.ariannavaraldo.model.ConfigDeparture;
+import it.polito.tdp.ariannavaraldo.model.DepartureStatistics;
 import it.polito.tdp.ariannavaraldo.model.Flight;
 import it.polito.tdp.ariannavaraldo.model.PersonDeparture;
 import it.polito.tdp.ariannavaraldo.model.PersonArea;
@@ -24,7 +26,7 @@ public class AirportSimulator {
 	List<CheckInDesk> airportCheckInDescks;
 	List<SecurityDesk> airportSecurityDescks;
 	Queue<PersonDeparture> toSecurityDesk;
-	Queue<PersonDeparture> inDutyFreeArea;
+	Queue<PersonDeparture> inEmbarcArea;
 
 	public AirportSimulator(ConfigDeparture config) {
 		this.config = config;
@@ -42,6 +44,7 @@ public class AirportSimulator {
 		for(int i=0; i<config.getNumSecurityDesk();i++)
 			airportSecurityDescks.add(new SecurityDesk(i));
 
+		//Utilizzo una coda prioritaria perchè per accodarli al controllo ho bisogno che siano ordinati
 		toSecurityDesk = new PriorityQueue<PersonDeparture>(new Comparator<PersonDeparture>() {
 			@Override
 			public int compare(PersonDeparture o1, PersonDeparture o2) {
@@ -53,16 +56,7 @@ public class AirportSimulator {
 			}
 		});
 
-		inDutyFreeArea = new PriorityQueue<PersonDeparture>(new Comparator<PersonDeparture>() {
-			@Override
-			public int compare(PersonDeparture o1, PersonDeparture o2) {
-				if(o1.getArea(Commons.AREA_DUTY).getStart().after(o2.getArea(Commons.AREA_DUTY).getStart()))
-					return 1;
-				if(o1.getArea(Commons.AREA_DUTY).getStart().before(o2.getArea(Commons.AREA_DUTY).getStart()))
-					return -1;
-				return 0;
-			}
-		});
+		inEmbarcArea = new  LinkedList<PersonDeparture>();
 
 		for (Flight flight : flights) {
 
@@ -80,11 +74,14 @@ public class AirportSimulator {
 
 		distributePassengerToSecurityDesk(toSecurityDesk);
 
-		while (!inDutyFreeArea.isEmpty()){
-			PersonDeparture p = inDutyFreeArea.remove();
-
-			/*
-			String s= p.getNumber() + "\t flight: " + p.getFlight().getFlightNum() + " - " + p.getFlight().getDepartureTime() + " -\t "
+		for(Flight flight: flights)
+			flight.setEsito("OK");
+		while (!inEmbarcArea.isEmpty()){
+			PersonDeparture p = inEmbarcArea.remove();
+			if(p.isLate())
+				p.getFlight().setEsito("LATE");
+			
+	/*		String s= p.getNumber() + "\t flight: " + p.getFlight().getFlightNum() + " - " + p.getFlight().getDepartureTime() + " -\t "
 					+ " Arrivo: " + p.getArea(Commons.AREA_ARRIVO).getStart() + " " + p.getArea(Commons.AREA_ARRIVO).getEnd();
 			if(p.getArea(Commons.AREA_CHECK_IN)!=null)
 					s+= " CheckIn: " +p.getCheckInNumber() + " " + p.getArea(Commons.AREA_CHECK_IN).getStart() + " " + p.getArea(Commons.AREA_CHECK_IN).getEnd();
@@ -93,18 +90,16 @@ public class AirportSimulator {
 			s+= " Duty: " + p.getArea(Commons.AREA_DUTY).getStart() + " " + p.getArea(Commons.AREA_DUTY).getEnd();
 			s+= " EMBARC: " + p.getArea(Commons.AREA_EMBARC).getStart() + " " + p.getArea(Commons.AREA_EMBARC).getEnd();
 
-			System.out.println(s);
-			*/
-			if(p.isLate())
-				p.getFlight().setEsito("KO");
-			
+			System.out.println(s);*/
+						
 		}
 	}
 
 
+
+
 	private void dequeueToSecurityDescks(Queue<PersonDeparture> queue, boolean fromCheckInArea) {
-		for(int i=0; i< queue.size();i++){
-//		while(!queue.isEmpty()){
+		while(!queue.isEmpty()){
 			PersonDeparture p = queue.remove();
 			PersonArea pa = new PersonArea();
 			pa.setArea(Commons.AREA_TO_SECURITY);
@@ -131,18 +126,32 @@ public class AirportSimulator {
 		while(!passengers.isEmpty()){
 
 			PersonDeparture p =passengers.remove();
-			s = getBestSecurityDesk(p.getArea(Commons.AREA_TO_SECURITY).getEnd());
+			Time arrivoSecurityDesk = p.getArea(Commons.AREA_TO_SECURITY).getEnd(); 
+			s = getBestSecurityDesk(arrivoSecurityDesk);
 
 			PersonArea pa = new PersonArea();
 			pa.setArea(Commons.AREA_SECURITY);
-			pa.setStart(new Time(s.getNext().getTime()));
+			//se arrivando al desk lo trova libero passa subito
+			if(arrivoSecurityDesk.compareTo(s.getNext())>0)
+				pa.setStart(new Time(arrivoSecurityDesk.getTime()));
+			else // altrimenti attende e si mi mette in coda e passa appena possibile	
+				pa.setStart(new Time(s.getNext().getTime()));
 			pa.setEnd(new Time(pa.getStart().getTime()+p.getTimeForSecurityCheck()));
 			if(s.getNext().compareTo(new Time(p.getFlight().getDepartureTime().getTime()-config.getMinTimeInDutyFree()-5*Commons.MINUTE))>0){
 				p.setLate(true);
 			}
 			p.getAreas().put(Commons.AREA_SECURITY,pa);
+
+			PersonArea pacs = new PersonArea();
+			pacs.setArea(Commons.AREA_CODA_SECURITY);
+			pacs.setStart(new Time(p.getArea(Commons.AREA_TO_SECURITY).getEnd().getTime()));
+			pacs.setEnd(new Time(pa.getStart().getTime()));
+			p.getAreas().put(Commons.AREA_CODA_SECURITY,pacs);
+			
+			
 			p.setSecurityCheckNumber(s.getNumber());
 			s.getQueue().add(p);
+			//a questo desk il prossimo passerà dopo questo passeggero
 			s.setNext(new Time(pa.getEnd().getTime()));
 
 			PersonArea paD = new PersonArea();
@@ -163,7 +172,7 @@ public class AirportSimulator {
 			paE.setEnd(endE);
 			p.getAreas().put(Commons.AREA_EMBARC,paE);
 
-			inDutyFreeArea.add(p);
+			inEmbarcArea.add(p);
 		}
 
 	}
@@ -198,9 +207,17 @@ public class AirportSimulator {
 			pa.setStart(new Time(ca.getNext().getTime()));
 			pa.setEnd(new Time(pa.getStart().getTime()+p.getTimeForCheckIn()));
 			p.getAreas().put(Commons.AREA_CHECK_IN,pa);
+
+			PersonArea pa1 = new PersonArea();
+			pa1.setArea(Commons.AREA_CODA_CHECK_IN);
+			pa1.setStart(new Time(p.getArea(Commons.AREA_ARRIVO).getEnd().getTime()));
+			pa1.setEnd(new Time(pa.getStart().getTime()));
+			p.getAreas().put(Commons.AREA_CODA_CHECK_IN,pa1);
+
 			p.setCheckInNumber(c.getNumber());
 			ca.getQueue().add(p);
 			ca.setNext(new Time(pa.getEnd().getTime()));
+
 		}
 		for(CheckInDesk desk:flightCheckInDesks){
 			desk.getCurrentActivity().setClose(new Time(desk.getCurrentActivity().getNext().getTime()));
@@ -232,8 +249,8 @@ public class AirportSimulator {
 		}
 
 		if(flightCheckInDesks.size()!=num_checkInDesk)
-			throw new Exception("Non ci sono check-in desck disponibili");
-
+			throw new Exception("Il numero di check-in desck disponibili non è sufficiente. Aumentarlo per effettuare la simulazione");
+		
 		return flightCheckInDesks;
 
 	}
@@ -254,8 +271,7 @@ public class AirportSimulator {
 			}
 		});
 
-		int i=0;
-        while (i++ <= flight.getPassengers()) {
+        for (int i=0;i < flight.getPassengers();i++) {
             PersonDeparture person = new PersonDeparture(i,flight,config);
             PersonArea area = new PersonArea();
             area.setStart(person.getActualArrivalInAirport());

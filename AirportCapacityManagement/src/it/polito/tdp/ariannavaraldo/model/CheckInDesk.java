@@ -48,7 +48,7 @@ public class CheckInDesk {
 			return true;
 		CheckInActivity last = getLastActivity();
 
-		if(t.getTime()-last.getClose().getTime() > timeReopen)
+		if(t.getTime()-last.getClose().getTime() > timeReopen*Commons.MINUTE)
 			return true;
 		return false;
 	}

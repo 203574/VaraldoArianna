@@ -35,7 +35,7 @@ public class PersonDeparture {
 		timeInArrivalArea = (r.nextInt(config.getMaxTimeInArrivalArea()-config.getMinTimeInArrivalArea())+config.getMinTimeInArrivalArea())*Commons.MINUTE;
 		timeForCheckIn = (r.nextInt(config.getMaxTimeForCheckIn()-config.getMinTimeForCheckIn())+config.getMinTimeForCheckIn())*Commons.MINUTE;
 		timeToSecurityArea = (r.nextInt(config.getMaxTimeToSecurityArea()-config.getMinTimeToSecurityArea())+config.getMinTimeToSecurityArea())*Commons.MINUTE;
-		timeForSecurityCheck = (r.nextInt(config.getMaxTimeForSecurityCheck()-config.getMinTimeForSecurityCheck())+config.getMinTimeForSecurityCheck())*Commons.MINUTE;
+		timeForSecurityCheck = (r.nextInt(config.getMaxTimeForSecurityCheck()-config.getMinTimeForSecurityCheck())+config.getMinTimeForSecurityCheck())*Commons.SECOND;
 		timeInEmbarc = (r.nextInt(config.getMaxTimeInEmbarc()-config.getMinTimeInEmbarc())+config.getMinTimeInEmbarc())*Commons.MINUTE;
 		//Per i voli nazionali devo arrivare un'ora prima mentre per gli internazionali 2 ore prima
 		int multiplier=1;

@@ -9,6 +9,7 @@ import it.polito.tdp.ariannavaraldo.dao.DepartureDAO;
 public class Model
 {
 	private ConfigDeparture configDeparture = new ConfigDeparture();
+	private ConfigArrival configArrival = new ConfigArrival();
 	public List<Airport> getAirports()
 	{
 		AirportDAO adao = new AirportDAO();
@@ -30,6 +31,10 @@ public class Model
 	public ConfigDeparture getConfigDeparture()
 	{
 		return configDeparture;
+	}
+
+	public ConfigArrival getConfigArrival() {
+		return configArrival;
 	}
 	
 }

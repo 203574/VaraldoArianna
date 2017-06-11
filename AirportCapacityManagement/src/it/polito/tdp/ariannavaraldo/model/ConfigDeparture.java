@@ -6,7 +6,7 @@ public class ConfigDeparture {
 
 	private int numCheckInDesk =150;
 
-	private int timeReopenCheckinDesk = Commons.MINUTE*20;
+	private int timeReopenCheckinDesk = 20;
 
 	private int numSecurityDesk = 10;
 
@@ -22,41 +22,15 @@ public class ConfigDeparture {
 	private int minTimeToSecurityArea = 3;
 	private int maxTimeToSecurityArea = 7;
 
-	private int minTimeForSecurityCheck = 1;
-	private int maxTimeForSecurityCheck = 2;
+	private int minTimeForSecurityCheck = 30;
+	private int maxTimeForSecurityCheck = 90;
 
 	private int minTimeInDutyFree = 5;
 
 	private int minTimeInEmbarc = 10;
 	private int maxTimeInEmbarc = 30;
 
-	public ConfigDeparture(int paxCheckInDesk, int numCheckInDesk, int timeReopenCheckinDesk, int numSecurityDesk,
-			int maxAdvanceArrival, int minAdvanceArrival, int minTimeInArrivalArea, int maxTimeInArrivalArea,
-			int minTimeForCheckIn, int maxTimeForCheckIn, int minTimeToSecurityArea, int maxTimeToSecurityArea,
-			int minTimeForSecurityCheck, int maxTimeForSecurityCheck, int minTimeInDutyFree, int minTimeInEmbarc,
-			int maxTimeInEmbarc) {
-		super();
-		this.paxCheckInDesk = paxCheckInDesk;
-		this.numCheckInDesk = numCheckInDesk;
-		this.timeReopenCheckinDesk = timeReopenCheckinDesk;
-		this.numSecurityDesk = numSecurityDesk;
-		this.maxAdvanceArrival = maxAdvanceArrival;
-		this.minAdvanceArrival = minAdvanceArrival;
-		this.minTimeInArrivalArea = minTimeInArrivalArea;
-		this.maxTimeInArrivalArea = maxTimeInArrivalArea;
-		this.minTimeForCheckIn = minTimeForCheckIn;
-		this.maxTimeForCheckIn = maxTimeForCheckIn;
-		this.minTimeToSecurityArea = minTimeToSecurityArea;
-		this.maxTimeToSecurityArea = maxTimeToSecurityArea;
-		this.minTimeForSecurityCheck = minTimeForSecurityCheck;
-		this.maxTimeForSecurityCheck = maxTimeForSecurityCheck;
-		this.minTimeInDutyFree = minTimeInDutyFree;
-		this.minTimeInEmbarc = minTimeInEmbarc;
-		this.maxTimeInEmbarc = maxTimeInEmbarc;
-	}
 
-	public ConfigDeparture() {
-	}
 
 	public int getMaxAdvanceArrival() {
 		return maxAdvanceArrival;
