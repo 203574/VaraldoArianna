@@ -294,9 +294,15 @@ public class AirCapMgtController
 
     @FXML
     void doSimulationDeparture(ActionEvent event){
+    	txtResultDeparture.clear();
     	AirportSimulator simulator = new AirportSimulator(m.getConfigDeparture());
     	List<Flight> departureFlights = tabDeparture.getItems().subList(0, tabDeparture.getItems().size());
-		for(Flight f:departureFlights){
+		if(departureFlights == null || departureFlights.size() == 0)
+		{
+			txtResultDeparture.appendText("Prima di avviare la simulazione è necessario effettuare una ricerca di voli.");
+			return;
+		}
+    	for(Flight f:departureFlights){
 			f.getPersons().clear();
 		}
 
@@ -354,10 +360,16 @@ public class AirCapMgtController
 	}
 	@FXML
     void doSimulationArrival(ActionEvent event) {
+		txtResultArrival.clear();
     	ArrivalAirportSimulator simulator = new ArrivalAirportSimulator(m.getConfigArrival());
     	List<Flight> arrivalFlights = tabArrival.getItems().subList(0, tabArrival.getItems().size());
+    	if(arrivalFlights == null || arrivalFlights.size() == 0)
+		{
+			txtResultArrival.appendText("Prima di avviare la simulazione è necessario effettuare una ricerca di voli.");
+			return;
+		}
 		for(Flight f:arrivalFlights){
-			f.getPersons().clear();
+			f.getArrivalPersons().clear();
 		}
 
     	try {
@@ -394,7 +406,8 @@ public class AirCapMgtController
 			}
 		} catch (Exception e) {
 			txtResultArrival.clear();
-			txtResultArrival.appendText(e.getMessage());
+			if(e!=null && e.getMessage()!=null)
+				txtResultArrival.appendText(e.getMessage());
 		}
     	
     	

@@ -57,15 +57,16 @@ public class ArrivalAirportSimulator {
 			flight.setEsito("OK");
 		while (!inExitArea.isEmpty()){
 			PersonArrival p = inExitArea.remove();
-			
-		String s= p.getNumber() + "\t flight: " + p.getFlight().getFlightNum() + " - " + p.getFlight().getDepartureTime() + " -\t "
+/*
+  		String s= p.getNumber() + "\t flight: " + p.getFlight().getFlightNum() + " - " + p.getFlight().getDepartureTime() + " -\t "
+ 
 					+ " Transfer arrivi: " + p.getArea(Commons.AREA_TRANSFER_TO_ARRIVAL).getStart() + " " + p.getArea(Commons.AREA_TRANSFER_TO_ARRIVAL).getEnd();
 			if(p.getArea(Commons.AREA_BAGGAGE_RECLAIM)!=null)
 					s+= " Baggage Reclaim: " +p.getBaggageReclaimUnitNumber() + " " + p.getArea(Commons.AREA_BAGGAGE_RECLAIM).getStart() + " " + p.getArea(Commons.AREA_BAGGAGE_RECLAIM).getEnd();
 			s+= " Exit: " + p.getArea(Commons.AREA_EXIT).getStart() + " " + p.getArea(Commons.AREA_EXIT).getEnd();
 
 			System.out.println(s);
-						
+*/
 		}
 	}
 
